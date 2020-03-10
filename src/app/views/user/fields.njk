@@ -1,0 +1,94 @@
+<div class="item">
+    <div>Nome Completo</div>
+    <div class="input">
+        <input 
+            type="text" 
+            name="name" 
+            placeholder="Digite Seu Nome Completo"
+            value="{{user.name}}"
+        >
+    </div>
+</div>
+
+<div class="item">
+    <div>Email</div>
+    <div class="input">
+        <input 
+            type="email" 
+            name="email" 
+            placeholder="Digite Seu Email"
+            value="{{user.email}}"
+            onblur="Validade.apply(this, 'isEmail')"
+        >
+    </div>
+</div>
+
+<div class="item">
+    <div>Senha</div>
+    <div class="input">
+        <input 
+            type="password" 
+            name="password" 
+            placeholder="Escolha Uma Senha Segura"
+            value="{{user.password}}"
+        >
+    </div>
+</div>
+
+{% if not user.id %}
+    <div class="item">
+        <div>Repetir Senha</div>
+        <div class="input">
+            <input 
+                type="password" 
+                name="passwordRepeat" 
+                placeholder="Repita a Senha Escolhida"
+            >
+        </div>
+    </div>
+{% endif %}
+
+<div class="item">
+    <div>CPF ou CPNJ</div>
+    <div class="input">
+        <input 
+            type="text" 
+            name="cpf_cnpj" 
+            placeholder="Digite seu CPF ou CNPJ"
+            value="{{user.cpf_cnpj}}"
+            onkeydown = "Mask.apply(this, 'cpfCnpj')"
+        >
+    </div>
+</div>
+
+<div class="item">
+    <div>CEP</div>
+    <div class="input">
+        <input 
+            type="text" 
+            name="cep" 
+            placeholder="99999-999"
+            value="{{user.cep}}"
+            onkeydown="Mask.apply(this, 'cep')"
+        >
+    </div>
+</div>
+
+<div class="item">
+    <div>Endereço Completo</div>
+    <div class="input">
+        <input 
+            type="text" 
+            name="address" 
+            placeholder="Digite O Seu Endereço Completo"
+            value="{{user.address}}"
+        >
+    </div>
+</div>
+
+
+
+
+
+
+
