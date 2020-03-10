@@ -6,6 +6,7 @@
             name="name" 
             placeholder="Digite Seu Nome Completo"
             value="{{user.name}}"
+            required
         >
     </div>
 </div>
@@ -30,7 +31,6 @@
             type="password" 
             name="password" 
             placeholder="Escolha Uma Senha Segura"
-            value="{{user.password}}"
         >
     </div>
 </div>
@@ -57,6 +57,7 @@
             placeholder="Digite seu CPF ou CNPJ"
             value="{{user.cpf_cnpj}}"
             onkeydown = "Mask.apply(this, 'cpfCnpj')"
+            onblur="Validade.apply(this, 'isCpfCnpj')"
         >
     </div>
 </div>
@@ -70,6 +71,7 @@
             placeholder="99999-999"
             value="{{user.cep}}"
             onkeydown="Mask.apply(this, 'cep')"
+            onblur="Validade.apply(this, 'isCep')"
         >
     </div>
 </div>
