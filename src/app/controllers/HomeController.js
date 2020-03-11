@@ -23,7 +23,6 @@ module.exports = {
         }).filter((product, index) => index > 2 ? false : true);
 
         const lastAdded = await Promise.all(productsPromise);
-        console.log(lastAdded)
         return res.render("home/index", {products: lastAdded})
     }
 
