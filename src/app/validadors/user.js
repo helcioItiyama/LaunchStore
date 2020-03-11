@@ -14,19 +14,6 @@ function checkAllFields(body) {
      }
 }
 
-async function show(req, res, next) {
-    const {userId: id} = req.session;
-
-        const user = await User.findOne({where: {id}});
-
-        if(!user) return res.render('user/register', {
-            error: "Usuário não encontrado"
-        })
-
-        req.user = user;
-        next()
-}
-
 async function post(req, res, next) {
     //check if it there're all fields
     const fillAllFields = checkAllFields(req.body);
@@ -57,6 +44,19 @@ async function post(req, res, next) {
         })
 
     next()
+}
+
+async function show(req, res, next) {
+    const {userId: id} = req.session;
+
+        const user = await User.findOne({where: {id}});
+
+        if(!user) return res.render('user/register', {
+            error: "Usuário não encontrado"
+        })
+
+        req.user = user;
+        next()
 }
 
 async function update(req, res, next) {

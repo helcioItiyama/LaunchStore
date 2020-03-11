@@ -6,25 +6,26 @@ module.exports = {
         return res.render('user/register')
     },
 
+    async post(req, res) {
+        const userId = await User.create(req.body);
+        
+        req.session.userId = userId;
+        
+        return res.redirect('/users')
+    },
+    
     async show(req, res) {
         const { user } = req;
         
         user.cpf_cnpj = formatCpfCnpj(user.cpf_cnpj);
         user.cep = formatCep(user.cep);
 
-        return res.render('user/index')
-    },
-
-    async post(req, res) {
-        const userId = await User.create(req.body);
-
-        req.session.userId = userId;
-
-        return res.redirect('/users')
+        return res.render('user/index', {user})
     },
 
     async update(req, res) {
         try {
+ 
             const {user} = req;
 
             let {name, email, cpf_cnpj, cep, address} = req.body;

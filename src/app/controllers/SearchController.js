@@ -38,7 +38,7 @@ module.exports = {
                 term: req.query.filter,
                 total: products.length
             }
-            console.log(products)
+
             const categories = products.map(product => ({
                 id: product.category_id,
                 name: product.category_name
