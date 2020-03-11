@@ -30,7 +30,12 @@
         <input 
             type="password" 
             name="password" 
-            placeholder="Escolha Uma Senha Segura"
+            {% if not user.id %}
+                placeholder="Escolha Uma Senha Segura"
+            {% else %}
+                placeholder="Digite Sua Senha Para Salvar"  
+            {% endif %}
+
         >
     </div>
 </div>
