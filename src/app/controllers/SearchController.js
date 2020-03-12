@@ -4,20 +4,11 @@ const Product = require('../models/Product');
 module.exports = {
     async index(req, res) {
         try {
-            let results,
-                params = {};
-            
-            const {filter, category} = req.query;
+            let {filter, category} = req.query;
 
-            if(!filter) return res.redirect("/")
+            if(!filter || filter.toLowerCase == 'toda a loja') filter = null;
 
-            params.filter = filter
-
-            if(category) {
-                params.category = category
-            }
-
-            results = await Product.search(params)
+            results = await Product.search({filter, category})
 
             async function getImage(productId) {
                 let result = await Product.files(productId);
@@ -35,9 +26,11 @@ module.exports = {
             const products = await Promise.all(productsPromise)
 
             const search = {
-                term: req.query.filter,
+                term: filter || 'toda a loja',
                 total: products.length
             }
+
+            console.log(products)
 
             const categories = products.map(product => ({
                 id: product.category_id,

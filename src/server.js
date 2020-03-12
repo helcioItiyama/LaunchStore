@@ -7,6 +7,11 @@ const session = require('./config/session');
 const server = express();
 
 server.use(session);
+server.use((req, res, next) => {
+    res.locals.session = req.session;
+    next()
+})
+
 server.use(express.urlencoded({extended: true})) /* faz funcionar o req.body*/
 server.use(express.static('public'));
 server.use(methodOverride('_method')); /*sobescreve o get para usar o método put e o delete*/
