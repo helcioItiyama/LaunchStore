@@ -4,9 +4,9 @@ module.exports = {
         //yyyy
         const year = date.getFullYear();
         //mm
-        const month = `0${date.getMonth() + 1}`.slice(-2); //getMonth começa com a contagem no 0;
+        const month = `0${date.getMonth() + 1}`.slice(-2); //getMonth starts counting from 0;
         //dd
-        const day = `0${date.getDate()}`.slice(-2);// slice se for negativo pega os dois ultimos números.
+        const day = `0${date.getDate()}`.slice(-2);// slice = if it's negative it catches the last two numbers.
         //return yyyy-mm-dd
         const hour = date.getHours();
         const minutes = date.getMinutes();

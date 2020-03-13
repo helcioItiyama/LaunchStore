@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const mailer = require('../../lib/mailer');
 const User = require('../models/User');
+const {hash} = require('bcryptjs');
 
 module.exports = {
     loginForm(req, res) {
@@ -25,10 +26,10 @@ module.exports = {
         const user = req.user;
 
         try{
-            //um token para esse usuário
+            //create a token for this user
             const token = crypto.randomBytes(20).toString('hex');
 
-            //criar uma expiração
+            //create token expiration
             let now = new Date();
             now = now.setHours(now.getHours() + 1) // 1h para expirar
 
@@ -37,7 +38,7 @@ module.exports = {
                 reset_token_expires: now
             })
 
-            //enviar um email com um link de recuperação de senha
+            // send email with the password recovery link
             await mailer.sendMail({
                 to: user.email,
                 from: 'no-reply@launchstore.com.br',
@@ -51,7 +52,7 @@ module.exports = {
                 </p>`
             })
 
-            //avisar o usuário que enviamos o email
+            //inform user that we sent him the email
             return res.render('session/forgot-password', {
                 success: "Verifique seu email para resetar sua senha!"
             })
@@ -62,6 +63,39 @@ module.exports = {
             return res.render('session/forgot-password', {
                 error: "Erro inesperado. Tente novamente!"
                 
+            })
+        }
+    },
+
+    resetForm(req, res) {
+        return res.render('session/password-reset', {token: req.query.token})
+    },
+
+    async reset(req, res) {
+        const user = req.user;
+        const {password, token} = req.body;
+        
+        try {
+            //create a new password hash
+            const newPassword = await hash(password, 8)
+            //update user
+            await User.update(user.id, {
+                password: newPassword,
+                reset_token: "",
+                reset_token_expires: ""
+            })
+            //inform user that he has a new password
+            return res.render('session/login', {
+                user: req.body,
+                success: "Senha atualizada! Faça o seu login"
+        })
+
+        } catch(err) {
+            console.error(err)
+            return res.render('session/password-reset', {
+                user: req.body,
+                token,
+                error: "Erro inesperado. Tente novamente!"    
             })
         }
     }

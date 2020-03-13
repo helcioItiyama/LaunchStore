@@ -5,7 +5,7 @@ const File = require('../models/File');
 
 module.exports = {
     create(req, res) {
-        //pegar Category
+        //get Category
         Category.all()
         .then((results) => {
             const categories = results.rows;
@@ -16,7 +16,7 @@ module.exports = {
     },
 
     async post(req, res) {
-       //lógica de salvar
+       //saving algorithm
        const keys = Object.keys(req.body);
         
         for (key of keys) {
@@ -28,6 +28,8 @@ module.exports = {
         if(req.files.length == 0) {
             return res.send("Please, upload at least one image")
         }
+
+        req.body.user_id = req.session.userId;
 
         let results = await Product.create(req.body);
         const productId = results.rows[0].id;
