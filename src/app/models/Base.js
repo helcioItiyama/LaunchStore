@@ -6,11 +6,10 @@ function find(filters, table) {
     if(filters) {
         Object.keys(filters).map(key => {
             //where || or
-            query += `${key}`;
+            query += ` ${key}`;
     
             Object.keys(filters[key]).map(field => {
-                console.log(field)
-                query += `${field} = '${filters[key][field]}'`
+                query += ` ${field} = '${filters[key][field]}'`
             })
         })
     }
@@ -27,8 +26,12 @@ const Base = {
     },
 
     async find(id) {
-        const results = await find({where: {id}}, this.table);
-        return results.rows[0];
+        try {
+            const results = await find({where: {id}}, this.table);
+            return results.rows[0];
+        } catch(error) {
+            console.error(`could not find id ${error}`)
+        }
     },
 
     async findOne(filters) {
@@ -49,7 +52,7 @@ const Base = {
             Object.keys(fields).map( key => {
                
                 keys.push(key);
-                values.push(fields[key]);
+                values.push(`'${fields[key]}'`);
             })
             const query = `INSERT INTO ${this.table} (${keys.join(',')})
             VALUES (${values.join(',')})

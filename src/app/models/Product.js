@@ -6,7 +6,7 @@ Base.init({table: 'products'});
 
 
 module.exports = {
-    Base,
+    ...Base,
 
     async files(id) {
         const results = await db.query(`SELECT * FROM files WHERE product_id = $1`, [id])
@@ -24,16 +24,16 @@ module.exports = {
             `
 
         if(category) {
-            query += `AND 
+            query += ` AND 
             products.category_id = ${category}`
         }
 
         if(filter) {
-            `(products.name ilike '%${filter}%'
+            ` AND (products.name ilike '%${filter}%'
             OR products.description ilike '%${filter}%')`
         }
 
-        query += `AND STATUS != 0`
+        query += ` AND STATUS != 0`
 
        const results = await db.query(query);
        return results.rows

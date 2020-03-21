@@ -190,15 +190,15 @@ const Lightbox = {
     }
 }
 
-const Validade = {
+const Validate = {
     apply(input,func) {
-        Validade.clearErrors(input);
+        Validate.clearErrors(input);
 
-        let results = Validade[func](input.value);
+        let results = Validate[func](input.value);
         input.value = results.value;
 
         if (results.error)
-           Validade.displayError(input, results.error)
+           Validate.displayError(input, results.error)
         
     },
 
@@ -257,6 +257,23 @@ const Validade = {
         return {
             error,
             value
+        }
+    },
+
+    allFields(e) {
+        const items = document.querySelectorAll(' .item input, .item select, .item textarea');
+        console.log('passei por aqui')
+        for (item of items) {
+            if (item.value == '') {
+                const message = document.createElement('div');
+                message.classList.add('messages');
+                message.classList.add('error');
+                message.style.position = 'fixed';
+                message.innerHTML = 'Todos os campos são obrigatórios';
+                document.querySelector('body').append(message);
+
+                e.preventDefault()
+            }
         }
     }
 }

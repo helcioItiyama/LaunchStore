@@ -1,6 +1,6 @@
 const Product = require('../models/Product');
 
-const {formatPrice} = require('../../lib/utils');
+const LoadProductService = require('../services/LoadProductService');
 
 module.exports = {
     async index(req, res) {
@@ -8,22 +8,11 @@ module.exports = {
 
             let {filter, category} = req.query;
 
-            if(!filter || filter.toLowerCase == 'toda a loja') filter = null;
+            if(!filter || filter.toLowerCase() == 'toda a loja') filter = null;
 
-           let products = await Product.search({filter, category})
+            let products = await Product.search({filter, category})
 
-            async function getImage(productId) {
-                let files = await Product.files(productId);
-                files = files.map(file => `${req.protocol}://${req.headers.host}${file.path.replace("public\\images\\", "\\\\images\\\\")}`);
-                return files[0]
-            }
-          
-            const productsPromise = products.map(async product => {
-                product.img = await getImage(product.id);
-                product.oldPrice = formatPrice(product.old_price);
-                product.price = formatPrice(product.price);
-                return product
-            })
+            const productsPromise = products.map(LoadProductService.format) //same as coding: (product => LoadProductService.format(product))
 
             products = await Promise.all(productsPromise)
 
