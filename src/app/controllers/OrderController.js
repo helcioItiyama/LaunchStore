@@ -1,9 +1,9 @@
 const LoadProductService = require('../services/LoadProductService');
+const LoadOrderService = require('../services/LoadOrderService');
 const User = require('../models/User');
 const Order = require('../models/Order');
 const Cart = require('../../lib/cart');
 const mailer = require('../../lib/mailer');
-const {formatPrice, date} = require('../../lib/utils');
 
 const email = (seller, product, buyer) => `
     <h2>Olá ${seller.name}</h2>
@@ -25,44 +25,28 @@ const email = (seller, product, buyer) => `
 module.exports = {
     async index(req, res) {
         //get user orders
-        let orders = await Order.findAll({where: {buyer_id: req.session.userId}});
-        const getOrdersPromise = orders.map(async order => {
-            //product details
-            order.product = await LoadProductService.load('products', {
-                where: {id: order.product_id}
-            })
-
-            //buyer details
-            order.buyer = await User.findOne({
-                where: {id: order.buyer_id}
-            })
-
-            //seller details
-            order.seller = await User.findOne({
-                where: {id: order.seller_id}
-            })
-
-            //price format
-            order.formattedPrice = formatPrice(order.price);
-            order.formattedTotal = formatPrice(order.total);
-
-            //status format
-            const statuses = {
-                open: "Aberto",
-                sold: "Vendido",
-                canceled: "Cancelado"
-            }
-
-            order.formattedStatus = statuses[order.status];
-            //updated by...format
-
-            const updatedAt = date(order.updated_at)
-            order.formattedUpdatedAt = `${order.formattedStatus} em ${updatedAt.day}/${updatedAt.month}/${updatedAt.year} às ${updatedAt.hour}h${updatedAt.minutes}`
-            return order;
-        })
-            orders = await Promise.all(getOrdersPromise);
-
+        const orders = await LoadOrderService.load('orders', {
+            where: {buyer_id: req.session.userId}
+        });
+        
         return res.render('orders/index', {orders})
+    },
+
+    async sales(req, res) {
+        //get user sales
+        const sales = await LoadOrderService.load('orders', {
+            where: {seller_id: req.session.userId}
+        });
+   
+        return res.render('orders/sales', {sales})
+    },
+
+    async show(req, res) {
+        const order = await LoadOrderService.load('order', {
+            where: {id: req.params.id}
+        });
+
+        return res.render('orders/details', {order});
     },
 
     async post(req, res) {
@@ -127,6 +111,43 @@ module.exports = {
             //or error
             console.error(error)
             return res.render('orders/error')
+        }
+    },
+
+    async update(req, res) {
+        try {
+            const { id, action} = req.params;
+
+            const acceptedActions = ['close', 'cancel'];
+            if(!acceptedActions.includes(action)) return res.send("Can't do this action");
+
+            //get the order
+            const order = await Order.findOne({
+                where: {id}
+            })
+            
+            if(!order) return res.send("Order not found")
+
+            //verify if the order is open
+            if(order.status != 'open') return res.send("Can't do this action")
+
+            //update the order
+            const statuses = {
+                close: "sold",
+                cancel: "canceled"
+            }
+
+            order.status = statuses[action];
+
+            await Order.update(id, {
+                status: order.status
+            })
+
+            //redirect
+            return res.redirect('/orders/sales');
+
+        } catch(error) {
+            console.error(error)
         }
     }
 }
